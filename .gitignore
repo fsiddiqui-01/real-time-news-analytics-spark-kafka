@@ -1,0 +1,20 @@
+# Python environment
+.venv/
+__pycache__/
+*.pyc
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Raw data
+data/raw/
+
+# Spark checkpoints and models
+checkpoints/
+models/
+
+# Temporary files
+*.log
+.DS_Store
