@@ -1,0 +1,9 @@
+
+pyspark==4.0.1
+kafka-python
+requests
+beautifulsoup4
+spacy
+python-dotenv
+pandas
+pyarrow
