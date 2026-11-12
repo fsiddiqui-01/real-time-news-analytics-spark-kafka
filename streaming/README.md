@@ -1,111 +1,102 @@
-# Part 1: Named Entity Streaming (Spark Structured Streaming)
+# Part 1: Named Entity Streaming
 
-`named_entity_stream.py` reads the Hacker News messages that `producer/news_producer.py` sends to Kafka **topic1**. It pulls the named entities out of each message with spaCy, keeps a running count for every entity, and sends the updated counts to Kafka **topic2** every 10 seconds. Logstash reads topic2 into Elasticsearch, and Kibana shows the top 10 entities.
+This Spark app finds **names of people, companies, and places** in live Hacker News posts and keeps a **running count** of how often each one is mentioned.
+
+## Where it fits
 
 ```text
-producer/news_producer.py → topic1 → named_entity_stream.py (Spark + spaCy) → topic2 → Logstash → Elasticsearch → Kibana
+Producer  →  Kafka topic1  →  THIS APP  →  Kafka topic2  →  Logstash  →  Elasticsearch  →  Kibana chart
 ```
 
-## What counts as a named entity
+1. `producer/news_producer.py` sends Hacker News posts to **topic1**.
+2. **This app** reads each post, finds the names with spaCy, and adds them to the running count.
+3. Every 10 seconds, it sends the updated counts to **topic2**, where the Kibana top-10 chart picks them up.
 
-spaCy's `en_core_web_sm` model labels spans of text. We keep the labels that are actual names:
+## Example
 
-| Label | Meaning | Example |
-|---|---|---|
-| PERSON | People | Sam Altman |
-| ORG | Companies, agencies, institutions | OpenAI, NASA |
-| GPE | Countries, cities, states | Texas, China |
-| LOC | Other locations | Silicon Valley |
-| NORP | Nationalities, religious or political groups | American |
-| FAC | Buildings, airports, highways | |
-| PRODUCT | Products | iPhone |
-| EVENT | Named events | |
-| WORK_OF_ART | Titles of books, songs, and so on | |
-| LAW | Named laws | GDPR |
+A post says: *"Microsoft announced a new AI research center in Seattle."*
 
-Numbers, dates, times, money, and percentages are left out. An entity is counted **once per message**, even if the message mentions it several times.
+The app finds **Microsoft**, **AI**, and **Seattle** and adds 1 to each count:
 
-## Message formats
-
-**In (topic1)**, as produced by `news_producer.py`:
-```json
-{"id": "41234567", "text": "OpenAI releases ...", "source": "hackernews", "timestamp": 1731440000, "collected_at": "..."}
+```text
++---------+-----+
+|entity   |count|
++---------+-----+
+|Microsoft|1    |
+|AI       |1    |
+|Seattle  |1    |
++---------+-----+
 ```
 
-**Out (topic2)**: one message per entity whose count changed in that batch:
-```json
-{"entity": "OpenAI", "count": 12, "timestamp": "2026-11-12T14:30:00.000-06:00"}
-```
-The Kafka message **key** is the entity name.
+When another post mentions Microsoft, its count goes up to 2.
 
-## Setup (one time)
+## How to run
 
+You need: Java 17, Python packages from `requirements.txt`, and Kafka running with `topic1` and `topic2`.
+
+**One-time setup:**
 ```bash
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 ```
-You also need Java 17 and Kafka running with `topic1` and `topic2` created.
 
-## How to run
-
-Run these from the **repo root**, using three Terminal windows.
-
-**Terminal 1: start the Spark app.** The Kafka connector version must match your PySpark version, so this command looks up the version for you:
+**Terminal 1: start this app** (from the repo folder):
 ```bash
 spark-submit \
   --packages org.apache.spark:spark-sql-kafka-0-10_2.13:$(python -c "import pyspark; print(pyspark.__version__)") \
-  streaming/named_entity_stream.py \
-  --input-topic topic1 \
-  --output-topic topic2 \
-  --checkpoint checkpoints/named_entity_stream
+  streaming/named_entity_stream.py
 ```
+Wait until you see `Streaming: topic1 -> named entities -> topic2`.
 
 **Terminal 2: start the producer:**
 ```bash
 python producer/news_producer.py --limit 20 --interval 60
 ```
 
-Every 10 seconds, Terminal 1 prints the current top 10 entities.
+Every 10 seconds, Terminal 1 prints the current **top 10 names**. Press **Ctrl + C** to stop.
 
-**Terminal 3 (optional): look at what's going into topic2:**
-```bash
-docker exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh \
-  --bootstrap-server localhost:9092 --topic topic2 --from-beginning
-```
+> **Start over from zero:** the app remembers its counts between runs. To reset them, run `rm -rf checkpoints/named_entity_stream` before starting.
 
-Press **Ctrl+C** to stop.
+## Settings (all optional)
 
-### Parameters
+The defaults work as-is. Change them by adding these to the `spark-submit` command:
 
-| Parameter | Default | Meaning |
+| Setting | Default | What it does |
 |---|---|---|
-| `--bootstrap` | `$KAFKA_BOOTSTRAP_SERVERS` or `localhost:9092` | Kafka address |
-| `--input-topic` | `topic1` | Where the raw messages come from |
-| `--output-topic` | `topic2` | Where the entity counts go |
-| `--checkpoint` | `checkpoints/named_entity_stream` | Folder where Spark saves its progress |
-| `--trigger` | `10 seconds` | How often the counts update |
-| `--starting-offsets` | `earliest` | `earliest` also counts messages already in topic1; `latest` counts only new ones |
-| `--show-top` | `10` | How many top entities to print in the terminal (`0` turns this off) |
+| `--bootstrap` | `localhost:9092` | Kafka address |
+| `--input-topic` | `topic1` | Where posts come from |
+| `--output-topic` | `topic2` | Where counts go |
+| `--checkpoint` | `checkpoints/named_entity_stream` | Where Spark saves its progress |
+| `--trigger` | `10 seconds` | How often counts update |
+| `--starting-offsets` | `earliest` | `earliest` = also count posts already in topic1; `latest` = only new posts |
+| `--show-top` | `10` | How many top names to print (`0` = none) |
 
-### Starting over from zero
+## What counts as a "name"
 
-Spark saves its counts in the checkpoint folder, so restarting the app **continues** the old counts. To reset everything, before the real one-hour run for example, delete that folder:
-```bash
-rm -rf checkpoints/named_entity_stream
+| Type | Examples |
+|---|---|
+| People | Jensen Huang, Sam Altman |
+| Companies and organizations | SpaceX, NASA, Microsoft |
+| Places | Texas, Seattle, China |
+| Other names | Nationalities, products, events, laws |
+
+Numbers, dates, and money amounts are skipped. A name counts **once per post**, even if the post repeats it.
+
+**Known limitation:** spaCy's small English model sometimes mislabels common words (for example, it may tag "AI" as an organization) or splits a name oddly.
+
+## Output format (topic2)
+
+Each message is JSON with the entity's **latest total count**:
+
+```json
+{"entity": "Microsoft", "count": 2, "timestamp": "2026-11-12T14:30:00.000-06:00"}
 ```
 
-## Note for the Logstash / Kibana step
+### For the Logstash / Kibana step
 
-Each topic2 message contains an entity's **latest total count**, so newer messages replace older ones rather than adding to them. In the Logstash `elasticsearch` output, set `document_id => "%{entity}"`. That way each entity is a single document that is overwritten with its newest count:
+Because each message holds the newest total, Logstash should **overwrite** each entity instead of adding duplicates. In the Elasticsearch output, set `document_id => "%{entity}"`:
 
 ```conf
-input {
-  kafka {
-    bootstrap_servers => "kafka:29092"   # use "localhost:9092" if Logstash runs outside Docker
-    topics => ["topic2"]
-    codec => "json"
-  }
-}
 output {
   elasticsearch {
     hosts => ["http://elasticsearch:9200"]
@@ -115,4 +106,4 @@ output {
 }
 ```
 
-In Kibana, build a **bar chart** on the `named-entities` index: put the **Top 10 values of `entity.keyword`** on one axis, ranked by the **Maximum of `count`**, and put the count on the other axis.
+In Kibana, make a **bar chart** of the top 10 values of `entity.keyword`, sized by the **maximum** of `count`.
