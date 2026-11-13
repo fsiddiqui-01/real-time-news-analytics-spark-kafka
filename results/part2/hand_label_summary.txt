@@ -1,0 +1,34 @@
+Hand-labeled messages: 50
+Fit none of the four classes: 7
+Fit one of the four classes: 43
+Model accuracy on those 43: 23/43 = 53.5%
+
+Your label (rows) vs model prediction (columns):
+predicted_class  Business  Sci/Tech  Sports  World
+my_label                                          
+Business                3         4       0      0
+None                    4         2       1      0
+Sci/Tech                7        20       4      3
+World                   2         0       0      0
+
+Messages the model got wrong:
+- you: Sci/Tech | model: Business (0.46) | 37% on ARC-AGI-2 Kaggle Without LLMs
+- you: Sci/Tech | model: Sports (0.38) | HuggingFace/Kernels: 200 WebGPU Kernels for Local AI
+- you: Sci/Tech | model: Business (0.71) | How Do Building Codes Affect the Price of Housing?
+- you: Sci/Tech | model: Sports (0.40) | Show HN: Agent-roast – Catches coding agents that weaken tests to get CI green
+- you: Sci/Tech | model: World (0.54) | Visualising Sorting Algorithms: Python's timsort (2009)
+- you: Sci/Tech | model: Business (0.49) | Australian companies face 'AI washing' claims after wave of job cuts, offshoring
+- you: Business | model: Sci/Tech (0.48) | From Lufthansa's crane to United's tulip, the stories behind 12 airline logos
+- you: Sci/Tech | model: World (0.51) | Build a legal document conflict detector
+- you: Business | model: Sci/Tech (0.40) | In-depth Analysis of DPRK Contagious Interview campaign
+- you: World | model: Business (0.68) | Microsoft presses Trump to scuttle ban on Chinese data center tech
+- you: Sci/Tech | model: Business (0.39) | Show HN: Lumin – Logs, metrics and uptime checks for one-person SaaS
+- you: Sci/Tech | model: World (0.44) | An agent's lament about the developer ecosystem
+- you: Sci/Tech | model: Sports (0.42) | ApoB-100 – 50 years unsolved, measured disordered, folded to order
+- you: Business | model: Sci/Tech (0.52) | Why Did Palantir CEO Alex Karp Buy a Swedish Forest?
+- you: Sci/Tech | model: Sports (0.51) | I built a dice football game solo with an AI coding assistant
+- you: Sci/Tech | model: Business (0.57) | Proposal: Unified CLI commands for rapid EF Core entity scaffolding
+- you: Business | model: Sci/Tech (0.50) | Nvidia Announces CEO Transition
+- you: World | model: Business (0.60) | NRC Issues First Construction Permit in Nearly 60 Years for Gas-Cooled Reactor
+- you: Sci/Tech | model: Business (0.58) | Open Kernel Challenge: reports from the top
+- you: Sci/Tech | model: Business (0.48) | How to use snowflake adaptive compute

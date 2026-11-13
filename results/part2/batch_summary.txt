@@ -1,0 +1,39 @@
+Messages read from data/raw/hackernews.jsonl: 1200
+Empty messages removed: 0
+Duplicate messages removed: 10
+Messages remaining: 1190
+
+Messages per predicted class:
+predicted_class  count  percent
+       Sci/Tech    741     62.3
+       Business    286     24.0
+         Sports     92      7.7
+          World     71      6.0
+
+--- World: 5 example messages ---
+[0.57] Nvidia's Disappearing Singapore Sales Deepen Mystery Around Megaspeed
+[0.37] HubSpot Announces Leadership Transition: Brian Halligan Returns as CEO
+[0.81] LeapQuant: Efficient Linear Attention with Accurate Recurrent State Quantization
+[0.50] WFX Phantom: The GitHub Actions Secret Stealer That Deletes Its Tracks
+[0.44] Swatting calls using AI means fake 911 calls are harder to detect
+
+--- Sports: 5 example messages ---
+[0.38] How to Make Your Moltbook Agent Reliable:Practical Guide to Agent Auditability
+[0.40] AI's Threat to Lawyers
+[0.43] Werner Jacobi
+[0.51] Ask HN: What is your current AI stack looking like?
+[0.40] The Feasibility of a Hardwired Pause of Frontier AI Training
+
+--- Business: 5 example messages ---
+[0.35] If I were diagnosed with cancer today, here's what I'd do
+[0.60] Navy Upgrades Energetics Mixing and Processing Equipment for Tomahawk Warhead
+[0.31] It Can Be Done (2003)
+[0.42] Doomsday: Friday, 13 November, A.D. 2026 (PDF)
+[0.54] American Cancer Society calls for prostate cancer screening in guideline change
+
+--- Sci/Tech: 5 example messages ---
+[1.00] Show HN: Bringing Pulumi's 20x faster journaling to DIY back ends Hey HN! I created a fork of pulumi to explore how we can bring Pulumi's state-journa
+[0.85] Needful: Rust-grade type checking for C, at zero runtime cost
+[0.31] In the late '90s I was a huge 3dfx fanboy
+[0.67] Pottery experiments 11,000 years ago: fired clay fragments from Cemka Hoyuk
+[0.44] Death to Dependency Hell: Why I Built My Own Stack

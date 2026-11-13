@@ -1,0 +1,51 @@
+id,text,my_label,predicted_class,probability
+50463721,Ask HN: Is GitHub Downloads Down? Facing issues downloading release artifacts since today morning. Status pages show everything is okay. A 68MB release artifact took me more than 20mins to download.,Sci/Tech,Sci/Tech,0.9823
+50461495,37% on ARC-AGI-2 Kaggle Without LLMs,Sci/Tech,Business,0.4568
+50461753,"China Covered Desert Land with Solar Panels,Found 126% More Carbon in the Soil",Sci/Tech,Sci/Tech,0.8447
+50459445,HuggingFace/Kernels: 200 WebGPU Kernels for Local AI,Sci/Tech,Sports,0.3767
+50471096,The cemeteries of the world are full of indispensable men (2009),None,Business,0.2804
+50464006,Does It Matter If Men Pee Sitting or Standing? A Randomized Test Has an Answer,None,Sports,0.3323
+50468705,Building Barista: Formal Verification and TLA+,Business,Business,0.5807
+50458170,Axiomitisation of Scienctific Notations for Programming Languages,Sci/Tech,Sci/Tech,0.4063
+50467924,Dailies,None,Business,0.3286
+50470137,The Hard Part of AI Coding Is the Second Change,Sci/Tech,Sci/Tech,0.3217
+50473129,Brian Halligan Returns as CEO of HubSpot To,Business,Business,0.2665
+50467974,How Do Building Codes Affect the Price of Housing?,Sci/Tech,Business,0.7065
+50467251,Four weeks of list prices from 10 research peptide stores,Sci/Tech,Sci/Tech,0.3788
+50468500,Show HN: Agent-roast – Catches coding agents that weaken tests to get CI green,Sci/Tech,Sports,0.3971
+50467152,Ask HN: Can I still earn money on ANT IPO?,Business,Business,0.5438
+50458322,Visualising Sorting Algorithms: Python's timsort (2009),Sci/Tech,World,0.5354
+50465441,AMD shares how it can retain 95% of server performance with just half the DRAM,Sci/Tech,Sci/Tech,0.6628
+50472038,Rust 1.100,None,Business,0.3638
+50467990,Spy versus Guy,None,Business,0.3687
+50458559,CC by SA Calculus Text Books: Active Calculus Multivariable,Sci/Tech,Sci/Tech,0.4849
+50472194,"Australian companies face 'AI washing' claims after wave of job cuts, offshoring",Sci/Tech,Business,0.4945
+50473176,"From Lufthansa's crane to United's tulip, the stories behind 12 airline logos",Business,Sci/Tech,0.4813
+50462039,Build a legal document conflict detector,Sci/Tech,World,0.5055
+50462939,LLMs Figure Out What You Mean – No Math Degree Required – Zarar's Blog,Sci/Tech,Sci/Tech,0.6525
+50460513,In-depth Analysis of DPRK Contagious Interview campaign,Business,Sci/Tech,0.3998
+50459255,"Show HN: Zumungo – AI-driven home automation Just released Zumungo AI driven Home Automation zumungo.com. Zumungo uses the power and flexibility of well established open source projects such as HomeAssitant, Frigate, Whisper, go2rtc, Piper, Open AI, Ollama, etc. It wraps everything in easy to use user interface for non professional users. In addition Zumungo allows users to add their own devices that are not part of the catalog. Of course Zumungo is full blown Home Automation platform and has build-in servers for managing all IoT protocols such as Matter, Thread, Zigbee, Zwave, MQTT, BT, TCP, mDNS etc. Special attention is paid to security and camera management all the way to implementing Vision AI. In my tests Zumungo announces ""UPS truck approaching the drive way. A person carrying a package walks towards the door"".  This announcement is processed by an event and results in ""UPS delivery"" on the GH speakers around the house. Zumungo has it's own event engine that is easy to use by  both the user as well as AI Agent. User can tell AI agent "" Create an event to open the garage door and turn on the porch light, upon my arrival home on foot or by car tracked by zumungo geo fencing"". Option exist for users to design their own panels to display on tablets on the wall or desktop computers for even easier management of the house by family members, guests, kids etc. For example if you rent your ADU on Airbnb than you can create dedicated panel on a tablet for guests to use that controls their rooms only and has no access to the main house. Zumungo has it's own mobile app available at iOS store. For Android devices it is downloadable from Zumungo server itself. As far as AI goes, Zumungo offers simple interface in settings for user to pick and choose online AI agent from the major 3 ( Claude, Gemini or Open AI ) or pick a local agent from a list of various agents. Available local agents include Llama, Mistral, Qwen, DeepSeek, Phi and others. Zumungo always updates the agents to the best and latest and always vets them for licensing and legal compliance. Zumungo also advises user what kind of hardware is needed for particular agent to run typically 16GB or more of GPU memory. Trying Zumngo is easy. One line on any Linux machine or ready made RPi image - download-flash and go. See ""get started"" at Zumungo web site. Support issues come after trying and this is taken care of as well at Zumungo Forums or just email support@zumungo.com",Sci/Tech,Sci/Tech,1
+50472636,"Show HN: A Slack-like GitHub client for managing PRs I know you've already seen the ""new"" github design for the PR UI, it barely fixes anything and I've been trying to fix all of github's issues one at a time. I eventually built a client to replace it, fully driven on the github APIs, fixes all the bugs and pain points and makes it easy to manage PRs and feedback comments like Slack threads. Every review comment lands in one inbox with unread state, like Slack threads. you open a thread and the code it’s about is right above it, which you can expand for more context, and save filters as views (e.g. only unresolved threads or per repo threads, etc). try it on web or desktop: https://pyor.review/download 1 min demo: https://youtu.be/aejLtTAT5Og I’m picking what to fix next from replies here.",Sci/Tech,Sci/Tech,1
+50472555,Fable and Mythos 5.2: The System Card,Sci/Tech,Sci/Tech,0.6781
+50466994,Microsoft presses Trump to scuttle ban on Chinese data center tech,World,Business,0.6833
+50465809,"What's going on with Jensen Huang, Megaspeed, and export controls?",None,Sci/Tech,0.8979
+50463281,Show HN: DeepSeek-Coder-V2-Lite Under 5GB: 65 TPS 100% In-VRAM on 6GB GPU,Sci/Tech,Sci/Tech,0.9346
+50469560,"Show HN: Lumin – Logs, metrics and uptime checks for one-person SaaS",Sci/Tech,Business,0.3862
+50465836,An agent's lament about the developer ecosystem,Sci/Tech,World,0.4415
+50464042,"My memory isn't getting worse, it's just using exponential decay",None,Sci/Tech,0.6495
+50461095,"ApoB-100 – 50 years unsolved, measured disordered, folded to order",Sci/Tech,Sports,0.4217
+50464098,Why Did Palantir CEO Alex Karp Buy a Swedish Forest?,Business,Sci/Tech,0.5178
+50457847,Show HN: I created a World Model that can run locally and hallucinates GTA5,Sci/Tech,Sci/Tech,0.8323
+50463156,A RISC-V Based TEE with AMD Zen 6 CPUs,Sci/Tech,Sci/Tech,0.7679
+50458038,I built a dice football game solo with an AI coding assistant,Sci/Tech,Sports,0.5142
+50463128,Proposal: Unified CLI commands for rapid EF Core entity scaffolding,Sci/Tech,Business,0.5678
+50460481,Fable 5.2 or Opus? When to use each model in Claude Code [video],Sci/Tech,Sci/Tech,0.7486
+50471829,Nvidia Announces CEO Transition,Business,Sci/Tech,0.5001
+50462758,NRC Issues First Construction Permit in Nearly 60 Years for Gas-Cooled Reactor,World,Business,0.5958
+50458891,Show HN: Sandbox-check – Does your locked-down container reach cloud metadata?,Sci/Tech,Sci/Tech,0.3806
+50466925,We committed to a zero-bugs policy,Sci/Tech,Sci/Tech,0.5786
+50467454,"What a week of Claude Code holds: the usage meter, per token type",Sci/Tech,Sci/Tech,0.9577
+50464937,Show HN: A private one-time paid alternative to Text Blaze,Sci/Tech,Sci/Tech,0.4836
+50465070,"Show HN: Veshell – Your Linux apps on a map, not on a desktop",Sci/Tech,Sci/Tech,0.8019
+50463299,Open Kernel Challenge: reports from the top,Sci/Tech,Business,0.5761
+50470749,How to use snowflake adaptive compute,Sci/Tech,Business,0.4845
