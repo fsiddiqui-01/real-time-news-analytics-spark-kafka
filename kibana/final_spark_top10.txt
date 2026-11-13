@@ -1,0 +1,15 @@
++-----------------+-----+
+|entity           |count|
++-----------------+-----+
+|Jensen Huang     |3    |
+|API              |3    |
+|AI               |3    |
+|Jules Turndown   |1    |
+|Chrome           |1    |
+|Outlook.com      |1    |
+|NYC Council      |1    |
+|Quick Break Games|1    |
+|Elon Musk        |1    |
+|Chiptune Synth   |1    |
++-----------------+-----+
+
