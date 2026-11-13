@@ -10,27 +10,18 @@ Pipeline:
         -> cumulative entity counts
         -> Kafka topic2
 
-Input example:
-    {
-        "id": "12345",
-        "text": "Microsoft opened an office in Seattle.",
-        "source": "hackernews"
-    }
-
-Output example:
-    {
-        "entity": "microsoft",
-        "count": 5,
-        "timestamp": "2026-11-12T15:30:00",
-        "batch_id": 2
-    }
 
 Requires:
     pyspark
     spacy
     en_core_web_sm
 
-Run with spark-submit and the Spark Kafka connector.
+Part 2.3c:
+    A second streaming query reads the same topic1 messages,
+    classifies each one with the saved AG News PipelineModel
+    and keeps a running count of messages.
+
+Run with spark-submit and the Spark Kafka connector:
 """
 
 import argparse
@@ -55,6 +46,9 @@ ENTITY_LABELS = {
     "WORK_OF_ART",
     "LAW",
 }
+
+# Class names of the AG News classifier (Part 2), in label order.
+LABEL_NAMES = ["World", "Sports", "Business", "Sci/Tech"]
 
 # Load the spaCy model once per Python worker.
 _nlp = None
@@ -139,8 +133,7 @@ def extract_entities(raw):
     if not text:
         return []
 
-    # Limit input size to avoid expensive processing
-    # of unusually long stories.
+    # Limit input size to avoid expensive processing of unusually long stories.
     text = text[:5000]
 
     doc = get_nlp()(text)
@@ -174,8 +167,7 @@ def extract_entities(raw):
         # Normalize for consistent counting.
         name = name.casefold()
 
-        # Keep every mention, including repeated mentions
-        # within the same message.
+        # Keep every mention, including repeated mentions within the same message.
         entities.append(name)
 
     return entities
@@ -227,7 +219,105 @@ def parse_args():
         default=10
     )
 
+    # Part 2.3c: path to the saved AG News PipelineModel.
+    parser.add_argument(
+        "--model",
+        default=None
+    )
+
+    parser.add_argument(
+        "--class-checkpoint",
+        default="checkpoints/topic_class_counts"
+    )
+
     return parser.parse_args()
+
+
+def start_classification_query(messages, args):
+    """
+    Part 2.3c: second streaming query.
+
+    Applies the saved AG News PipelineModel to every
+    incoming message and keeps a running count of
+    messages per predicted class.
+    """
+
+    from pyspark.ml import PipelineModel
+
+    model = PipelineModel.load(args.model)
+
+    # Reuse extract_text so both queries read the message text in exactly the same way.
+    text_udf = F.udf(extract_text, StringType())
+
+    texts = (
+        messages
+        .select(
+            text_udf(F.col("message")).alias("text")
+        )
+        .filter(F.col("text").isNotNull())
+        .filter(F.length(F.trim(F.col("text"))) > 0)
+    )
+
+    # The same pipeline steps used in training:tokenizer -> stop words -> TF -> IDF -> logistic regression.
+    predicted = model.transform(texts)
+
+    names = F.array(*[F.lit(n) for n in LABEL_NAMES])
+
+    class_counts = (
+        predicted
+        .select(
+            F.element_at(
+                names,
+                F.col("prediction").cast("int") + 1
+            ).alias("predicted_class")
+        )
+        .groupBy("predicted_class")
+        .count()
+    )
+
+    def show_class_batch(batch_df, batch_id):
+
+        if batch_df.isEmpty():
+            return
+
+        total = batch_df.agg(F.sum("count")).first()[0]
+
+        print(
+            f"\n========== CLASS COUNTS, BATCH {batch_id} ==========",
+            flush=True
+        )
+
+        print(
+            f"Messages classified so far: {total}",
+            flush=True
+        )
+
+        (
+            batch_df
+            .withColumn(
+                "percent",
+                F.round(F.col("count") * 100 / F.lit(total), 1)
+            )
+            .orderBy(F.desc("count"))
+            .show(truncate=False)
+        )
+
+    return (
+        class_counts.writeStream
+        .foreachBatch(show_class_batch)
+        .outputMode("complete")
+        .option(
+            "checkpointLocation",
+            args.class_checkpoint
+        )
+        .trigger(
+            processingTime=args.trigger
+        )
+        .queryName(
+            "topic_class_counts"
+        )
+        .start()
+    )
 
 
 def main():
@@ -237,6 +327,8 @@ def main():
     spark = (
         SparkSession.builder
         .appName("CS4371-NamedEntityStreaming")
+    
+        .config("spark.driver.extraJavaOptions", "-Xss16m")
         .getOrCreate()
     )
 
@@ -254,9 +346,7 @@ def main():
         ArrayType(StringType())
     )
 
-    # -------------------------------------------------
     # STEP 1: Read raw messages from Kafka topic1
-    # -------------------------------------------------
 
     raw_stream = (
         spark.readStream
@@ -286,9 +376,7 @@ def main():
         .alias("message")
     )
 
-    # -------------------------------------------------
     # STEP 2: Extract named entities
-    # -------------------------------------------------
 
     entities = (
         messages
@@ -307,9 +395,7 @@ def main():
         )
     )
 
-    # -------------------------------------------------
     # STEP 3: Maintain cumulative counts
-    # -------------------------------------------------
 
     counts = (
         entities
@@ -317,14 +403,10 @@ def main():
         .count()
     )
 
-    # -------------------------------------------------
     # STEP 4: Process each streaming micro-batch
-    # -------------------------------------------------
 
     def process_batch(batch_df, batch_id):
 
-        # Avoid recomputing the same batch when
-        # writing to Kafka and showing top entities.
         batch_df.persist()
 
         try:
@@ -344,12 +426,6 @@ def main():
                     F.current_timestamp()
                 )
             )
-
-            # Kafka messages use the normalized entity
-            # as their key.
-            #
-            # This allows Elasticsearch to update the
-            # current count for each entity.
 
             kafka_df = output_df.select(
                 F.col("entity")
@@ -395,8 +471,7 @@ def main():
                 flush=True
             )
 
-            # Display the true top N across all
-            # stories processed so far.
+            # Display the true top N across all stories processed so far.
             if args.show_top > 0:
 
                 print(
@@ -419,9 +494,7 @@ def main():
         finally:
             batch_df.unpersist()
 
-    # -------------------------------------------------
     # STEP 5: Start the streaming query
-    # -------------------------------------------------
 
     query = (
         counts.writeStream
@@ -446,17 +519,23 @@ def main():
     print("Kafka broker:", args.bootstrap)
     print("Checkpoint:", args.checkpoint)
     print("Trigger interval:", args.trigger)
+    # Part 2.3c: start the classification query too.
+    if args.model:
+        start_classification_query(messages, args)
+        print("Topic classifier model:", args.model)
+        print("Class checkpoint:", args.class_checkpoint)
+
     print("\nPress Ctrl+C to stop.\n")
 
     try:
-        query.awaitTermination()
+        spark.streams.awaitAnyTermination()
 
     except KeyboardInterrupt:
         print("\nStopping stream...")
 
     finally:
-        if query.isActive:
-            query.stop()
+        for active in spark.streams.active:
+            active.stop()
 
         spark.stop()
 
